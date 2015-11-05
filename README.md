@@ -163,6 +163,17 @@ EOF
 aws s3api put-bucket-policy --bucket $BUCKET --policy "$POLICY"
 ```
 
+## Adding S3 wagon to Maven
+
+You can build the wagon and add it as a library to your Maven installation to resolve the [parent-pom issue][s3-parent-pom-issue].
+
+Clone the code repository and do the following:
+
+```shell
+mvn clean package assembly:single -Dmaven.test.skip=true
+cp -i target/aws-maven-*.jar $M2_HOME/lib/
+```
+
 [aws-maven]: http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22org.springframework.build%22%20AND%20a%3A%22aws-maven%22
 [cli]: http://aws.amazon.com/documentation/cli/
 [console]: https://console.aws.amazon.com/s3
@@ -172,3 +183,4 @@ aws s3api put-bucket-policy --bucket $BUCKET --policy "$POLICY"
 [s3]: http://aws.amazon.com/s3/
 [sys-prop]: http://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/auth/SystemPropertiesCredentialsProvider.html
 [wagon]: http://maven.apache.org/wagon/
+[s3-parent-pom-issue]: http://www.sonatype.org/nexus/2015/03/03/why-s3-is-not-the-perfect-maven-repository/
