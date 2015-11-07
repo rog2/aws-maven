@@ -18,6 +18,7 @@ package org.springframework.build.aws.maven;
 
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.ClientConfiguration;
+import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.internal.Mimetypes;
@@ -45,7 +46,7 @@ import java.util.regex.Pattern;
  * This implementation uses the <code>username</code> and <code>passphrase</code> portions of the server authentication
  * metadata for credentials.
  */
-public final class SimpleStorageServiceWagon extends AbstractWagon {
+public class SimpleStorageServiceWagon extends AbstractWagon {
 
     private static final String KEY_FORMAT = "%s%s";
 
@@ -83,9 +84,17 @@ public final class SimpleStorageServiceWagon extends AbstractWagon {
             this.baseDirectory = S3Utils.getBaseDirectory(repository);
 
             this.amazonS3 = new AmazonS3Client(credentialsProvider, clientConfiguration);
-            Region region = Region.fromLocationConstraint(this.amazonS3.getBucketLocation(this.bucketName));
-            this.amazonS3.setEndpoint(region.getEndpoint());
+            this.amazonS3.setRegion(getRepositoryRegion(repository));
         }
+    }
+
+    private com.amazonaws.regions.Region getRepositoryRegion(Repository repository) {
+        String protocol = repository.getProtocol();
+        if (protocol.equals("s3cn")) {
+            return com.amazonaws.regions.Region.getRegion(Regions.CN_NORTH_1);
+        }
+        String bucketLocation = this.amazonS3.getBucketLocation(this.bucketName);
+        return com.amazonaws.regions.Region.getRegion(Regions.fromName(bucketLocation));
     }
 
     @Override
