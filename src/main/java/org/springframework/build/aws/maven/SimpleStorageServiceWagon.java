@@ -84,17 +84,18 @@ public class SimpleStorageServiceWagon extends AbstractWagon {
             this.baseDirectory = S3Utils.getBaseDirectory(repository);
 
             this.amazonS3 = new AmazonS3Client(credentialsProvider, clientConfiguration);
-            this.amazonS3.setRegion(getRepositoryRegion(repository));
+            setS3Endpoint(this.amazonS3, repository);
         }
     }
 
-    private com.amazonaws.regions.Region getRepositoryRegion(Repository repository) {
+    private void setS3Endpoint(AmazonS3 s3, Repository repository) {
         String protocol = repository.getProtocol();
         if (protocol.equals("s3cn")) {
-            return com.amazonaws.regions.Region.getRegion(Regions.CN_NORTH_1);
+            s3.setRegion(com.amazonaws.regions.Region.getRegion(Regions.CN_NORTH_1));
+        } else {
+            Region region = Region.fromLocationConstraint(s3.getBucketLocation(this.bucketName));
+            s3.setEndpoint(region.getEndpoint());
         }
-        String bucketLocation = this.amazonS3.getBucketLocation(this.bucketName);
-        return com.amazonaws.regions.Region.getRegion(Regions.fromName(bucketLocation));
     }
 
     @Override
