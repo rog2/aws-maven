@@ -4,6 +4,9 @@ pipeline {
     agent {
         label "${params.JENKINS_SLAVE_LABEL}"
     }
+    tools {
+        maven "${params.MAVEN_VERSION}"
+    }
     options {
         ansiColor('xterm')
     }
@@ -18,10 +21,8 @@ pipeline {
     stages {
         stage('Maven Package') {
             steps {
-                withMaven(maven: "${params.MAVEN_VERSION}") {
-                    sh 'mvn clean package assembly:single -Dmaven.test.skip=true'
-                    sh 'cp -vf target/aws-maven-*.jar $M2_HOME/lib/'
-                }
+                sh 'mvn clean package assembly:single -Dmaven.test.skip=true'
+                sh 'cp -vf target/aws-maven-*.jar $M2_HOME/lib/'
             }
         }
     }
