@@ -1,8 +1,8 @@
 #!/usr/bin/env groovy
 
-def MAVEN_BUILD = 'mvn clean package assembly:single -Dmaven.test.skip=true'
-def COPY_JAR_UNIX = 'cp -vf target/aws-maven-*.jar $M2_HOME/lib/'
-def COPY_JAR_WINDOWS = 'copy /y target\\aws-maven-*.jar %M2_HOME%\\lib\\'
+MAVEN_BUILD = 'mvn clean package assembly:single -Dmaven.test.skip=true'
+COPY_JAR_UNIX = 'cp -vf target/aws-maven-*.jar $M2_HOME/lib/'
+COPY_JAR_WINDOWS = 'copy /y target\\aws-maven-*.jar %M2_HOME%\\lib\\'
 
 def createJob(nodeName) {
     return {
