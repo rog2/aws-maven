@@ -8,13 +8,15 @@ def createJob(nodeName) {
     return {
         node(nodeName) {
             checkout scm
-            tool type: 'maven', name: params.MAVEN_VERSION
-            if (isUnix()) {
-                sh MAVEN_BUILD
-                sh COPY_JAR_UNIX
-            } else {
-                bat MAVEN_BUILD
-                bat COPY_JAR_WINDOWS
+            def mavenHome = tool type: 'maven', name: params.MAVEN_VERSION
+            withEnv(["PATH+MAVEN=${mavenHome}/bin", "M2_HOME=${mavenHome}"]) {
+                if (isUnix()) {
+                    sh MAVEN_BUILD
+                    sh COPY_JAR_UNIX
+                } else {
+                    bat MAVEN_BUILD
+                    bat COPY_JAR_WINDOWS
+                }
             }
         }
     }
